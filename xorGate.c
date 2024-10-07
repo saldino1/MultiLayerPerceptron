@@ -4,7 +4,7 @@
 #include <time.h>
 
 int main () {
-    const int iterations = 1000;
+    const int iterations = 10;
     const int inputLayerSize = 2;
     const int hiddenLayerSize = 2;
     const int outputLayerSize = 1;
@@ -27,7 +27,7 @@ int main () {
         outputLayer[i] = (Node*)malloc(sizeof(Node));
         nodeInit(outputLayer[i], hiddenLayerSize);
     }
-
+  
     // Begin feedforward process
     printf("Neural Net Starts Now\n");
     for(int i = 0; i < iterations; i++) {
@@ -46,10 +46,11 @@ int main () {
             printf("Output from Node #%i of : %0.2f\n", j, outputLayer[j]->output);
         }
 
-
+        
         //Training time baby
         double totalError = baseErrorCalc(xorFunction(inputLayer, inputLayerSize), outputLayer[0]->output);
-        if(xorFunction(inputLayer, inputLayerSize) == outputLayer[0]->output) {
+        printf("Error: %0.1f\n", totalError);
+        if(xorFunction(inputLayer, inputLayerSize) == outputLayer[0]->output && iterations > (2*iterations/3)) {
             countCorrect++;
             printf("Correct\n");
         }
@@ -57,7 +58,10 @@ int main () {
             errorCalc(outputLayer[j], totalError, 1, 1);
         }
         for(int j = 0; j < hiddenLayerSize; j++){
-            errorCalc(hiddenLayer[j], outputLayer[0]->output, outputLayer[0]->weights[j],sumWeight(outputLayer[0]));
+            errorCalc(hiddenLayer[j], outputLayer[0]->error, outputLayer[0]->weights[j+1],sumWeight(outputLayer[0]));
+        }
+        for(int j = 0; j < inputLayerSize; j++){
+            //errorCalc(inputLayer[j],)
         }
 
         weightUpdateNode(outputLayer[0],hiddenLayer);

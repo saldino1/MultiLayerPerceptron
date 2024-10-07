@@ -73,6 +73,7 @@ double sumWeight (Node* node) {
 
 // Calculate Error at a given Node in the net
 void errorCalc (Node* node, double errorAhead, double weight, double sumWeight) {
+    printf("Error at Node: %f\n", errorAhead * (weight/sumWeight));
     node->error = errorAhead * (weight/sumWeight);
 }
 
@@ -80,7 +81,9 @@ void errorCalc (Node* node, double errorAhead, double weight, double sumWeight) 
 void weightUpdateNode (Node* node, Node* inputs[]) {
     node->weights[0] += node->error * 1 * LEARNING_RATE;
     for(int i = 1; i < node->weightArrSize; i++) {
-        node->weights[i] += node->error * inputs[i-1]->output * LEARNING_RATE;
+        printf("Tweaked by: %f\n",inputs[i-1]->error * inputs[i-1]->output * LEARNING_RATE);
+        node->weights[i] += inputs[i-1]->error * inputs[i-1]->output * LEARNING_RATE;
+        printf("New Weight: %f\n", node->weights[i]);
     }
 }
 
@@ -106,23 +109,18 @@ double outputCalcNodeBased (Node* node, Node* inputNodes[], int numNodes) {
 
 // -----------------NN GOALS------------------
 int andFunction (int *inputs) {
-    if(inputs [0] == 1 && inputs[1] == 1){
-        return 1;
-    }
-    return 0;
+    return inputs [0] == 1 && inputs[1] == 1;
 }
 
 int orFunction (int *inputs) {
-    if(inputs[0] == 1 || inputs[1] == 1){\
-        return 1;
-    }
-    return 0;
+    return inputs[0] == 1 || inputs[1] == 1;
 }
 
 int xorFunction (Node *inputs[], int numNodes) {
     int* inputsInt = (int*)malloc(sizeof(int) * numNodes);
     for(int i = 0; i < numNodes; i ++) {
-        inputsInt[i] = inputs[i]->output;
+        //printf("xor: %i\n", (int)(inputs[i]->output));
+        inputsInt[i] = (int)(inputs[i]->output);
     }
     if((orFunction(inputsInt)) && !(andFunction(inputsInt))){
         free(inputsInt);
