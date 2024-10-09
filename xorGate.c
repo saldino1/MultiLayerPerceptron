@@ -55,10 +55,10 @@ int main () {
             printf("Correct\n");
         }
         for(int j = 0; j < outputLayerSize; j++){
-            errorCalc(outputLayer[j], totalError, 1, 1);
+            errorCalc(outputLayer[j], hiddenLayerSize, totalError);
         }
         for(int j = 0; j < hiddenLayerSize; j++){
-            errorCalc(hiddenLayer[j], outputLayer[0]->error, outputLayer[0]->weights[j+1],sumWeight(outputLayer[0]));
+            errorCalc(hiddenLayer[j], inputLayerSize, outputLayer[0]->error[j]);
         }
         for(int j = 0; j < inputLayerSize; j++){
             //errorCalc(inputLayer[j],)

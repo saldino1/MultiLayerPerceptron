@@ -10,13 +10,14 @@ typedef struct Node {
     int weightArrSize;
     double* weights;
     double output;
-    double error;
+    double* error;
 } Node;
 
 // Node Weights initialization
 void nodeInit(Node* node, int numInputs) {
     node->weightArrSize = numInputs + 1;
     node->weights = (double*)calloc(node->weightArrSize, sizeof(double));
+    node->error = (double*)calloc(numInputs, sizeof(double));
     for(int i = 0; i < node->weightArrSize; i++){
         node->weights[i] = ((double)rand() / RAND_MAX);
     }
@@ -72,17 +73,21 @@ double sumWeight (Node* node) {
 }
 
 // Calculate Error at a given Node in the net
-void errorCalc (Node* node, double errorAhead, double weight, double sumWeight) {
-    printf("Error at Node: %f\n", errorAhead * (weight/sumWeight));
-    node->error = errorAhead * (weight/sumWeight);
+void errorCalc (Node* node, int numInputs, double errorAhead) {
+    //printf("Error at Node: %f\n", errorAhead * (weight/sumWeight));
+    for(int i = 0; i < numInputs; i++){
+        printf("Error at Node: %f\n",errorAhead * (node->weights[i+1]/sumWeight(node)));
+        node->error[i] = errorAhead * (node->weights[i+1]/sumWeight(node));
+    }
+    //node->error = errorAhead * (weight/sumWeight);
 }
 
 // New Weight Calc - multilayer
 void weightUpdateNode (Node* node, Node* inputs[]) {
-    node->weights[0] += node->error * 1 * LEARNING_RATE;
+    node->weights[0] += node->error[0] * 1 * LEARNING_RATE;
     for(int i = 1; i < node->weightArrSize; i++) {
-        printf("Tweaked by: %f\n",inputs[i-1]->error * inputs[i-1]->output * LEARNING_RATE);
-        node->weights[i] += inputs[i-1]->error * inputs[i-1]->output * LEARNING_RATE;
+        printf("Tweaked by: %f\n",node->error[i-1] * inputs[i-1]->output * LEARNING_RATE);
+        node->weights[i] += node->error[i-1] * inputs[i-1]->output * LEARNING_RATE;
         printf("New Weight: %f\n", node->weights[i]);
     }
 }
